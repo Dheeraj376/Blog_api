@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Blog</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f6f8;
+    }
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    input, textarea, select, button {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .visibility-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .visibility-btn {
+      flex: 1;
+      padding: 10px;
+      background-color: #e0e0e0;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .visibility-btn.active {
+      background-color: #007BFF;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Update Blog Post</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    
+    <!-- Hidden author field -->
+    <input type="hidden" name="author" value="{{ blog.author }}">
+
+    <!-- Title -->
+    <input type="text" name="title" value="{{ blog.title }}" required>
+
+    <!-- Content -->
+    <textarea name="content" rows="6" required>{{ blog.content }}</textarea>
+
+    <!-- Status Dropdown -->
+    <select name="status" required>
+      <option value="draft" {% if blog.status == 'draft' %}selected{% endif %}>Draft</option>
+      <option value="published" {% if blog.status == 'published' %}selected{% endif %}>Published</option>
+    </select>
+
+    <!-- Visibility Toggle -->
+    <div class="form-group">
+      <label>Visibility</label>
+      <div class="visibility-buttons">
+        <button type="button" class="visibility-btn" data-value="public">Public</button>
+        <button type="button" class="visibility-btn" data-value="private">Private</button>
+      </div>
+      <input type="hidden" name="visibility" id="visibility" value="">
+    </div>
+
+    <!-- Submit -->
+    <button type="submit">Update Blog</button>
+  </form>
+
+  <script>
+    const buttons = document.querySelectorAll('.visibility-btn');
+    const hiddenInput = document.getElementById('visibility');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        buttons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        hiddenInput.value = button.dataset.value;
+      });
+    });
+
+    // Default visibility selection (can be dynamically set via backend if needed)
+    const defaultVisibility = "{{ blog.visibility|default:'public' }}"; // Use Django variable if possible
+    const defaultBtn = document.querySelector(`.visibility-btn[data-value="${defaultVisibility}"]`);
+    if (defaultBtn) {
+      defaultBtn.classList.add('active');
+      hiddenInput.value = defaultVisibility;
+    }
+  </script>
+
+</body>
+</html>

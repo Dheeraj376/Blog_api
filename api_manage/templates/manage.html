@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Management</title>
+  <style>
+    /* Reset some basics */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    }
+    h2 {
+      margin-bottom: 30px;
+      font-weight: 600;
+      color: #222;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 8px;
+    }
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 12px;
+      margin-bottom: 30px;
+      align-items: center;
+    }
+    .add-button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.25s ease;
+      box-shadow: 0 2px 6px rgb(40 167 69 / 0.3);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .add-button:hover {
+      background-color: #218838;
+      box-shadow: 0 4px 12px rgb(33 136 56 / 0.4);
+    }
+    .add-button.logout-button {
+      background-color: #dc3545;
+      box-shadow: 0 2px 6px rgb(220 53 69 / 0.3);
+    }
+    .add-button.logout-button:hover {
+      background-color: #c82333;
+      box-shadow: 0 4px 12px rgb(200 35 51 / 0.4);
+    }
+    .add-button.back-manage {
+      background-color: #007bff;
+      box-shadow: 0 2px 6px rgb(0 123 255 / 0.3);
+    }
+    .add-button.back-manage:hover {
+      background-color: #0069d9;
+      box-shadow: 0 4px 12px rgb(0 105 217 / 0.4);
+    }
+
+    .search-box {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 10px;
+      flex-grow: 1;
+      max-width: 360px;
+    }
+    .search-box input[type="text"] {
+      flex-grow: 1;
+      padding: 10px 14px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      transition: border-color 0.2s ease;
+    }
+    .search-box input[type="text"]:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 5px rgb(0 123 255 / 0.4);
+    }
+    .search-box button {
+      background-color: #007bff;
+      border: none;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+      box-shadow: 0 2px 6px rgb(0 123 255 / 0.3);
+    }
+    .search-box button:hover {
+      background-color: #0069d9;
+      box-shadow: 0 4px 12px rgb(0 105 217 / 0.4);
+    }
+
+    .filter-box {
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1rem;
+      color: #555;
+    }
+    .filter-box label {
+      font-weight: 600;
+    }
+    .filter-box select {
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+    .filter-box select:hover,
+    .filter-box select:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 6px rgb(0 123 255 / 0.4);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    thead {
+      background-color: #f1f5f9;
+    }
+    th, td {
+      padding: 14px 18px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+      font-size: 1rem;
+    }
+    tbody tr:hover {
+      background-color: #f9fafb;
+    }
+    th {
+      font-weight: 700;
+      color: #4a5568;
+    }
+
+    .actions a {
+      margin-right: 14px;
+      font-size: 1.3rem;
+      text-decoration: none;
+      transition: color 0.25s ease;
+      user-select: none;
+    }
+    .actions a:hover {
+      opacity: 0.75;
+    }
+    .edit-icon {
+      color: #007bff;
+    }
+    .delete-icon {
+      color: #dc3545;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .top-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-box {
+        max-width: 100%;
+      }
+      .add-button {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main">
+    <h2>User: {{ user }}</h2>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+
+      <!-- Back to Manage Button -->
+      <a href="/home/" class="add-button back-manage" aria-label="Back to Manage">
+        ← Back to home
+      </a>
+
+      <!-- Add New Button -->
+      <a href="/create/" class="add-button" aria-label="Add New Blog">
+        + Add New
+      </a>
+
+      <!-- Search Form -->
+      <form method="get" class="search-box" role="search" aria-label="Search blogs">
+        <input type="hidden" name="username" value="{{ user.username }}" />
+        <input type="hidden" name="status" value="{{ selected_status|default:'' }}" />
+        <input 
+          type="text" 
+          name="title" 
+          placeholder="Search blog title..." 
+          value="{{ request.GET.title|default:'' }}" 
+          aria-label="Search blog by title" 
+          autocomplete="off"
+        />
+        <button type="submit" aria-label="Search blogs">Search</button>
+      </form>
+
+      <!-- Login/Logout -->
+      {% if request.user.is_authenticated %}
+      <form action="/logout/" method="post" style="margin:0;">
+        {% csrf_token %}
+        <button type="submit" class="add-button logout-button" aria-label="Logout">Logout</button>
+      </form>
+      {% else %}
+      <a href="/user_auth/" class="add-button" aria-label="Login">Login</a>
+      {% endif %}
+    </div>
+
+    <!-- Filter -->
+    <form method="get" class="filter-box" aria-label="Filter blog status">
+      
+      <input type="hidden" name="title" value="{{ request.GET.title|default:'' }}" />
+      <label for="status">Filter by status:</label>
+      <select name="status" id="status" onchange="this.form.submit()">
+        <option value="">All</option>
+        <option value="draft" {% if selected_status == 'draft' %}selected{% endif %}>Draft</option>
+        <option value="published" {% if selected_status == 'published' %}selected{% endif %}>Published</option>
+      </select>
+    </form>
+
+    <!-- Results Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Blog Title</th>
+          <th>Last Updated</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for blog in blogs %}
+        <tr>
+          <td>{{ blog.title }}</td>
+          <td>{{ blog.update_date }}</td>
+          <td class="actions">
+            <a href="/update?blog_id={{ blog.id }}" class="edit-icon" aria-label="Edit Blog">&#9998;</a>
+          </td>
+          <td class="actions">
+            <a href="/delete?blog_id={{ blog.id }}" class="delete-icon" aria-label="Delete Blog">&#128465;</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" style="text-align:center; color:#777;">No blog posts found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
